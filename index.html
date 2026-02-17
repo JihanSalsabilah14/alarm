@@ -1,276 +1,244 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Motion Alarm</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        min-height: 100vh;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        background: linear-gradient(135deg, #0f172a, #020617);
-        color: #e5e7eb;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .app {
-        width: 100%;
-        max-width: 420px;
-        padding: 24px;
-        text-align: center;
-      }
-      .card {
-        background: rgba(255, 255, 255, 0.06);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 24px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-        transition: 0.3s;
-      }
-      h1 {
-        margin: 0 0 8px;
-        font-size: 28px;
-      }
-      .subtitle {
-        font-size: 14px;
-        opacity: 0.8;
-        margin-bottom: 20px;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <title>Motion Alarm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #020617);
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .app { width: 100%; max-width: 420px; padding: 24px; text-align: center; }
+    .card {
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      transition: 0.3s;
+    }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    .subtitle { font-size: 14px; opacity: 0.8; margin-bottom: 20px; }
 
-      .status {
-        margin: 16px 0;
-        padding: 12px;
-        border-radius: 12px;
-        font-weight: 600;
-        transition: 0.3s;
-      }
-      .status.off {
-        background: rgba(239, 68, 68, 0.15);
-        color: #fecaca;
-        border: 1px solid rgba(239, 68, 68, 0.4);
-      }
-      .status.on {
-        background: rgba(34, 197, 94, 0.15);
-        color: #bbf7d0;
-        border: 1px solid rgba(34, 197, 94, 0.4);
-      }
+    .status {
+      margin: 16px 0;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .status.off {
+      background: rgba(239,68,68,0.15);
+      color: #fecaca;
+      border: 1px solid rgba(239,68,68,0.4);
+    }
+    .status.on {
+      background: rgba(34,197,94,0.15);
+      color: #bbf7d0;
+      border: 1px solid rgba(34,197,94,0.4);
+    }
 
-      button {
-        width: 100%;
-        padding: 14px;
-        border-radius: 14px;
-        border: none;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: 0.2s;
-      }
-      button.enable {
-        background: linear-gradient(135deg, #fb7185, #f97316);
-        color: #020617;
-      }
-      button.enabled {
-        background: linear-gradient(135deg, #22c55e, #16a34a);
-        color: #022c22;
-      }
+    button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button.enable {
+      background: linear-gradient(135deg, #fb7185, #f97316);
+      color: #020617;
+    }
+    button.enabled {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #022c22;
+    }
 
-      .motion-box {
-        margin-top: 20px;
-        height: 120px;
-        border-radius: 16px;
-        background: rgba(255, 255, 255, 0.05);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        transition: 0.2s;
-      }
-      .motion-box.active {
-        background: rgba(251, 113, 133, 0.25);
-        transform: scale(1.03);
-      }
-      .hint {
-        margin-top: 16px;
-        font-size: 13px;
-        opacity: 0.7;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="app">
-      <div class="card">
-        <h1>📱 Motion Alarm</h1>
-        <div class="subtitle">Shake / miring = bunyi</div>
+    .motion-box {
+      margin-top: 20px;
+      height: 120px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: 0.2s;
+    }
+    .motion-box.active {
+      background: rgba(251,113,133,0.25);
+      transform: scale(1.03);
+    }
+    .hint { margin-top: 16px; font-size: 13px; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card">
+      <h1>📱 Motion Alarm</h1>
+      <div class="subtitle">Suara hanya bunyi saat bergerak</div>
 
-        <div id="status" class="status off">Status: ❌ Belum Aktif</div>
-        <button id="enableBtn" class="enable">Aktifkan Sensor</button>
+      <div id="status" class="status off">Status: ❌ Belum Aktif</div>
+      <button id="enableBtn" class="enable">Aktifkan Sensor</button>
 
-        <div id="motionBox" class="motion-box">Menunggu gerakan...</div>
-        <div class="hint">Buka di HP, lalu klik tombol aktifkan sensor.</div>
-      </div>
+      <div id="motionBox" class="motion-box">Menunggu gerakan...</div>
+      <div class="hint">Buka di HP (HTTPS), klik tombol, lalu gerakkan perangkat.</div>
     </div>
+  </div>
 
-    <!-- GANTI NAMA FILE SESUAI PUNYA KAMU -->
-    <audio id="soundShake" src="shake.mp3" preload="auto"></audio>
-    <audio id="soundLeft" src="left.mp3" preload="auto"></audio>
-    <audio id="soundRight" src="right.mp3" preload="auto"></audio>
-    <audio id="soundTilt" src="tilt.mp3" preload="auto"></audio>
+  <!-- File sound -->
+  <audio id="soundShake" src="shake.mp3" preload="auto"></audio>
+  <audio id="soundLeft"  src="left.mp3"  preload="auto"></audio>
+  <audio id="soundRight" src="right.mp3" preload="auto"></audio>
+  <audio id="soundTilt"  src="tilt.mp3"  preload="auto"></audio>
 
-    <script>
-      const enableBtn = document.getElementById("enableBtn");
-      const statusEl = document.getElementById("status");
-      const motionBox = document.getElementById("motionBox");
+  <script>
+    const enableBtn = document.getElementById("enableBtn");
+    const statusEl = document.getElementById("status");
+    const motionBox = document.getElementById("motionBox");
 
-      const soundShake = document.getElementById("soundShake");
-      const soundLeft = document.getElementById("soundLeft");
-      const soundRight = document.getElementById("soundRight");
-      const soundTilt = document.getElementById("soundTilt");
+    const sounds = {
+      shake: document.getElementById("soundShake"),
+      left:  document.getElementById("soundLeft"),
+      right: document.getElementById("soundRight"),
+      tilt:  document.getElementById("soundTilt"),
+    };
 
-      let enabled = false;
-      let lastX = null,
-        lastY = null,
-        lastZ = null;
+    let enabled = false;
+    let lastX = null, lastY = null, lastZ = null;
+    let idleTimer = null;
+    let currentSound = null;
 
-      // TUNING (ubah kalau perlu)
-      const SHAKE_THRESHOLD = 25; // naikkan (30-35) kalau terlalu sensitif
-      const IDLE_TIMEOUT = 400; // ms tanpa gerak = stop suara
+    // Tuning
+    const SHAKE_THRESHOLD = 28; // naikin kalau masih sensitif
+    const IDLE_TIMEOUT = 250;   // ms tanpa gerak = STOP
 
-      let idleTimer = null;
-
-      function stopAllSounds() {
-        [soundShake, soundLeft, soundRight, soundTilt].forEach((a) => {
-          a.pause();
-          a.currentTime = 0;
-        });
-      }
-
-      function playWhileMoving(audio, label, volume = 1) {
-        if (idleTimer) clearTimeout(idleTimer);
-
-        audio.volume = Math.min(Math.max(volume, 0.2), 1);
-        if (audio.paused) {
-          audio.currentTime = 0;
-          audio.play().catch(() => {});
-        }
-
-        motionBox.classList.add("active");
-        motionBox.textContent = label;
-
-        // kalau tidak ada gerak lagi dalam X ms → stop
-        idleTimer = setTimeout(() => {
-          stopAllSounds();
-          motionBox.classList.remove("active");
-          motionBox.textContent = "Menunggu gerakan...";
-        }, IDLE_TIMEOUT);
-      }
-
-      function onDeviceMotion(event) {
-        if (!enabled) return;
-        const acc = event.accelerationIncludingGravity;
-        if (!acc) return;
-
-        const { x, y, z } = acc;
-
-        if (lastX !== null) {
-          const dx = Math.abs(x - lastX);
-          const dy = Math.abs(y - lastY);
-          const dz = Math.abs(z - lastZ);
-          const delta = dx + dy + dz;
-
-          if (delta > SHAKE_THRESHOLD) {
-            const volume = Math.min(delta / 50, 1);
-            playWhileMoving(soundShake, "💥 SHAKE!", volume);
-          }
-        }
-        lastX = x;
-        lastY = y;
-        lastZ = z;
-      }
-
-      function onDeviceOrientation(event) {
-        if (!enabled) return;
-        const { gamma, beta } = event;
-
-        if (gamma > 30) {
-          playWhileMoving(
-            soundRight,
-            "👉 MIRING KANAN",
-            Math.min(Math.abs(gamma) / 60, 1),
-          );
-        } else if (gamma < -30) {
-          playWhileMoving(
-            soundLeft,
-            "👈 MIRING KIRI",
-            Math.min(Math.abs(gamma) / 60, 1),
-          );
-        } else if (beta > 40 || beta < -40) {
-          playWhileMoving(
-            soundTilt,
-            "🔄 TILT DEPAN/BELAKANG",
-            Math.min(Math.abs(beta) / 100, 1),
-          );
-        }
-      }
-
-      async function enableSensors() {
-        // iOS permission (sekali)
-        if (
-          typeof DeviceMotionEvent !== "undefined" &&
-          typeof DeviceMotionEvent.requestPermission === "function"
-        ) {
-          const permission = await DeviceMotionEvent.requestPermission();
-          if (permission !== "granted") {
-            alert("Izin sensor ditolak");
-            return;
-          }
-        }
-
-        window.addEventListener("devicemotion", onDeviceMotion);
-        window.addEventListener("deviceorientation", onDeviceOrientation);
-
-        enabled = true;
-        statusEl.textContent = "Status: ✅ Aktif";
-        statusEl.classList.remove("off");
-        statusEl.classList.add("on");
-        enableBtn.textContent = "Nonaktifkan Sensor";
-        enableBtn.classList.remove("enable");
-        enableBtn.classList.add("enabled");
-      }
-
-      function disableSensors() {
-        window.removeEventListener("devicemotion", onDeviceMotion);
-        window.removeEventListener("deviceorientation", onDeviceOrientation);
-
-        enabled = false;
-        lastX = lastY = lastZ = null;
-
-        stopAllSounds();
-        if (idleTimer) {
-          clearTimeout(idleTimer);
-          idleTimer = null;
-        }
-
-        statusEl.textContent = "Status: ❌ Belum Aktif";
-        statusEl.classList.remove("on");
-        statusEl.classList.add("off");
-        enableBtn.textContent = "Aktifkan Sensor";
-        enableBtn.classList.remove("enabled");
-        enableBtn.classList.add("enable");
-        motionBox.textContent = "Menunggu gerakan...";
-      }
-
-      enableBtn.addEventListener("click", () => {
-        if (!enabled) enableSensors();
-        else disableSensors();
+    function stopAll() {
+      Object.values(sounds).forEach(a => {
+        a.pause();
+        a.currentTime = 0;
       });
-    </script>
-  </body>
+      currentSound = null;
+    }
+
+    function playOnly(key, label, volume = 1) {
+      // stop sound lain dulu
+      if (currentSound && currentSound !== sounds[key]) {
+        stopAll();
+      }
+
+      const audio = sounds[key];
+      currentSound = audio;
+
+      audio.volume = Math.min(Math.max(volume, 0.2), 1);
+      if (audio.paused) {
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
+      }
+
+      motionBox.classList.add("active");
+      motionBox.textContent = label;
+
+      // reset idle timer
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        stopAll();
+        motionBox.classList.remove("active");
+        motionBox.textContent = "Menunggu gerakan...";
+      }, IDLE_TIMEOUT);
+    }
+
+    function onDeviceMotion(event) {
+      if (!enabled) return;
+      const acc = event.accelerationIncludingGravity;
+      if (!acc) return;
+
+      const { x, y, z } = acc;
+
+      if (lastX !== null) {
+        const dx = Math.abs(x - lastX);
+        const dy = Math.abs(y - lastY);
+        const dz = Math.abs(z - lastZ);
+        const delta = dx + dy + dz;
+
+        if (delta > SHAKE_THRESHOLD) {
+          const volume = Math.min(delta / 50, 1);
+          playOnly("shake", "💥 SHAKE!", volume);
+        }
+      }
+      lastX = x; lastY = y; lastZ = z;
+    }
+
+    function onDeviceOrientation(event) {
+      if (!enabled) return;
+      const { gamma, beta } = event;
+
+      if (gamma > 30) {
+        playOnly("right", "👉 MIRING KANAN", Math.min(Math.abs(gamma) / 60, 1));
+      } else if (gamma < -30) {
+        playOnly("left", "👈 MIRING KIRI", Math.min(Math.abs(gamma) / 60, 1));
+      } else if (beta > 40 || beta < -40) {
+        playOnly("tilt", "🔄 TILT DEPAN/BELAKANG", Math.min(Math.abs(beta) / 100, 1));
+      }
+    }
+
+    async function enableSensors() {
+      // iOS permission
+      if (typeof DeviceMotionEvent !== "undefined" &&
+          typeof DeviceMotionEvent.requestPermission === "function") {
+        const permission = await DeviceMotionEvent.requestPermission();
+        if (permission !== "granted") {
+          alert("Izin sensor ditolak");
+          return;
+        }
+      }
+
+      window.addEventListener("devicemotion", onDeviceMotion);
+      window.addEventListener("deviceorientation", onDeviceOrientation);
+
+      enabled = true;
+      statusEl.textContent = "Status: ✅ Aktif";
+      statusEl.classList.remove("off");
+      statusEl.classList.add("on");
+      enableBtn.textContent = "Nonaktifkan Sensor";
+      enableBtn.classList.remove("enable");
+      enableBtn.classList.add("enabled");
+    }
+
+    function disableSensors() {
+      window.removeEventListener("devicemotion", onDeviceMotion);
+      window.removeEventListener("deviceorientation", onDeviceOrientation);
+
+      enabled = false;
+      lastX = lastY = lastZ = null;
+
+      if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+      stopAll(); // 🔴 PAKSA MATI SEMUA SOUND
+
+      statusEl.textContent = "Status: ❌ Belum Aktif";
+      statusEl.classList.remove("on");
+      statusEl.classList.add("off");
+      enableBtn.textContent = "Aktifkan Sensor";
+      enableBtn.classList.remove("enabled");
+      enableBtn.classList.add("enable");
+      motionBox.textContent = "Menunggu gerakan...";
+    }
+
+    enableBtn.addEventListener("click", () => {
+      if (!enabled) enableSensors();
+      else disableSensors();
+    });
+  </script>
+</body>
 </html>
