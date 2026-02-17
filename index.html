@@ -107,9 +107,9 @@
     let lastX = null, lastY = null, lastZ = null;
     let idleTimer = null;
 
-    // TUNING (sesuaikan kalau perlu)
-    const SHAKE_THRESHOLD = 28; // naikkan (30-35) kalau masih sensitif
-    const IDLE_TIMEOUT = 200;   // ms tanpa gerak = STOP TOTAL
+    // TUNING
+    const SHAKE_THRESHOLD = 30; // naikkan (35-40) kalau masih sensitif
+    const IDLE_TIMEOUT = 180;   // ms tanpa gerak = STOP TOTAL
 
     function stopSound() {
       sound.pause();
@@ -127,10 +127,8 @@
     }
 
     function onMoveDetected(label, volume = 1) {
-      // reset idle timer
       if (idleTimer) clearTimeout(idleTimer);
 
-      // play (kalau sudah play, biarin lanjut — gak dijeda)
       sound.volume = Math.min(Math.max(volume, 0.2), 1);
       if (sound.paused) {
         sound.play().catch(() => {});
@@ -159,7 +157,7 @@
         const delta = dx + dy + dz;
 
         if (delta > SHAKE_THRESHOLD) {
-          const volume = Math.min(delta / 50, 1);
+          const volume = Math.min(delta / 60, 1);
           onMoveDetected("💥 SHAKE!", volume);
         }
       }
@@ -180,26 +178,40 @@
     }
 
     async function enableSensors() {
-      // iOS permission
-      if (typeof DeviceMotionEvent !== "undefined" &&
-          typeof DeviceMotionEvent.requestPermission === "function") {
-        const permission = await DeviceMotionEvent.requestPermission();
-        if (permission !== "granted") {
-          alert("Izin sensor ditolak");
-          return;
+      try {
+        // iOS permission untuk Motion
+        if (typeof DeviceMotionEvent !== "undefined" &&
+            typeof DeviceMotionEvent.requestPermission === "function") {
+          const motionPermission = await DeviceMotionEvent.requestPermission();
+          if (motionPermission !== "granted") {
+            alert("Izin Motion ditolak");
+            return;
+          }
         }
+        // iOS permission untuk Orientation
+        if (typeof DeviceOrientationEvent !== "undefined" &&
+            typeof DeviceOrientationEvent.requestPermission === "function") {
+          const orientPermission = await DeviceOrientationEvent.requestPermission();
+          if (orientPermission !== "granted") {
+            alert("Izin Orientation ditolak");
+            return;
+          }
+        }
+
+        window.addEventListener("devicemotion", onDeviceMotion);
+        window.addEventListener("deviceorientation", onDeviceOrientation);
+
+        enabled = true;
+        statusEl.textContent = "Status: ✅ Aktif";
+        statusEl.classList.remove("off");
+        statusEl.classList.add("on");
+        enableBtn.textContent = "Nonaktifkan Sensor";
+        enableBtn.classList.remove("enable");
+        enableBtn.classList.add("enabled");
+      } catch (e) {
+        alert("Sensor tidak didukung di perangkat ini.");
+        console.error(e);
       }
-
-      window.addEventListener("devicemotion", onDeviceMotion);
-      window.addEventListener("deviceorientation", onDeviceOrientation);
-
-      enabled = true;
-      statusEl.textContent = "Status: ✅ Aktif";
-      statusEl.classList.remove("off");
-      statusEl.classList.add("on");
-      enableBtn.textContent = "Nonaktifkan Sensor";
-      enableBtn.classList.remove("enable");
-      enableBtn.classList.add("enabled");
     }
 
     function disableSensors() {
