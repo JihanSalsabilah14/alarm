@@ -2,12 +2,13 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <title>Motion Alarm</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <style>
       * {
         box-sizing: border-box;
       }
+
       body {
         margin: 0;
         min-height: 100vh;
@@ -21,12 +22,14 @@
         align-items: center;
         justify-content: center;
       }
+
       .app {
         width: 100%;
         max-width: 420px;
         padding: 24px;
         text-align: center;
       }
+
       .card {
         background: rgba(255, 255, 255, 0.06);
         backdrop-filter: blur(10px);
@@ -34,10 +37,12 @@
         padding: 24px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
       }
+
       h1 {
         margin: 0 0 8px;
         font-size: 28px;
       }
+
       .subtitle {
         font-size: 14px;
         opacity: 0.8;
@@ -50,11 +55,13 @@
         border-radius: 12px;
         font-weight: 600;
       }
+
       .status.off {
         background: rgba(239, 68, 68, 0.15);
         color: #fecaca;
         border: 1px solid rgba(239, 68, 68, 0.4);
       }
+
       .status.on {
         background: rgba(34, 197, 94, 0.15);
         color: #bbf7d0;
@@ -70,11 +77,13 @@
         font-weight: 600;
         cursor: pointer;
       }
-      button.enable {
+
+      .enable {
         background: linear-gradient(135deg, #fb7185, #f97316);
         color: #020617;
       }
-      button.enabled {
+
+      .enabled {
         background: linear-gradient(135deg, #22c55e, #16a34a);
         color: #022c22;
       }
@@ -90,10 +99,12 @@
         font-size: 18px;
         transition: 0.2s;
       }
+
       .motion-box.active {
         background: rgba(251, 113, 133, 0.25);
         transform: scale(1.03);
       }
+
       .hint {
         margin-top: 16px;
         font-size: 13px;
@@ -101,25 +112,25 @@
       }
     </style>
   </head>
+
   <body>
     <div class="app">
       <div class="card">
         <h1>📱 Motion Alarm</h1>
-        <div class="subtitle">
-          Shake / miring kiri / miring kanan → bunyi (1 sound)
-        </div>
+        <div class="subtitle">Shake / miring kiri / miring kanan → bunyi</div>
 
         <div id="status" class="status off">Status: ❌ Belum Aktif</div>
+
         <button id="enableBtn" class="enable">Aktifkan Sensor</button>
 
         <div id="motionBox" class="motion-box">Menunggu gerakan...</div>
+
         <div class="hint">
-          Buka di HP (HTTPS), klik tombol, lalu gerakkan perangkat.
+          Buka di HP lalu klik tombol dan gerakkan perangkat
         </div>
       </div>
     </div>
 
-    <!-- SATU SOUND UNTUK SEMUA GERAKAN -->
     <audio id="sound" src="shake.mp3" preload="auto"></audio>
 
     <script>
@@ -129,14 +140,13 @@
       const sound = document.getElementById("sound");
 
       let enabled = false;
-      let lastX = null,
-        lastY = null,
-        lastZ = null;
+      let lastX = null;
+      let lastY = null;
+      let lastZ = null;
       let idleTimer = null;
 
-      // TUNING
-      const SHAKE_THRESHOLD = 30; // naikkan (35-40) kalau masih sensitif
-      const IDLE_TIMEOUT = 180; // ms tanpa gerak = STOP TOTAL
+      const SHAKE_THRESHOLD = 30;
+      const IDLE_TIMEOUT = 200;
 
       function stopSound() {
         sound.pause();
@@ -157,13 +167,13 @@
         if (idleTimer) clearTimeout(idleTimer);
 
         sound.volume = Math.min(Math.max(volume, 0.2), 1);
+
         if (sound.paused) {
           sound.play().catch(() => {});
         }
 
         markActive(label);
 
-        // kalau tidak ada gerak lagi → STOP TOTAL
         idleTimer = setTimeout(() => {
           stopSound();
           markIdle();
@@ -172,22 +182,28 @@
 
       function onDeviceMotion(event) {
         if (!enabled) return;
+
         const acc = event.accelerationIncludingGravity;
         if (!acc) return;
 
-        const { x, y, z } = acc;
+        const x = acc.x;
+        const y = acc.y;
+        const z = acc.z;
 
         if (lastX !== null) {
           const dx = Math.abs(x - lastX);
           const dy = Math.abs(y - lastY);
           const dz = Math.abs(z - lastZ);
+
           const delta = dx + dy + dz;
 
           if (delta > SHAKE_THRESHOLD) {
             const volume = Math.min(delta / 60, 1);
+
             onMoveDetected("💥 SHAKE!", volume);
           }
         }
+
         lastX = x;
         lastY = y;
         lastZ = z;
@@ -195,38 +211,26 @@
 
       function onDeviceOrientation(event) {
         if (!enabled) return;
-        const { gamma, beta } = event;
+
+        const gamma = event.gamma;
 
         if (gamma > 30) {
-          onMoveDetected("👉 MIRING KANAN", Math.min(Math.abs(gamma) / 60, 1));
+          onMoveDetected("👉 MIRING KANAN");
         } else if (gamma < -30) {
-          onMoveDetected("👈 MIRING KIRI", Math.min(Math.abs(gamma) / 60, 1));
+          onMoveDetected("👈 MIRING KIRI");
         }
       }
 
       async function enableSensors() {
         try {
-          // iOS permission untuk Motion
           if (
             typeof DeviceMotionEvent !== "undefined" &&
             typeof DeviceMotionEvent.requestPermission === "function"
           ) {
-            const motionPermission =
-              await DeviceMotionEvent.requestPermission();
-            if (motionPermission !== "granted") {
-              alert("Izin Motion ditolak");
-              return;
-            }
-          }
-          // iOS permission untuk Orientation
-          if (
-            typeof DeviceOrientationEvent !== "undefined" &&
-            typeof DeviceOrientationEvent.requestPermission === "function"
-          ) {
-            const orientPermission =
-              await DeviceOrientationEvent.requestPermission();
-            if (orientPermission !== "granted") {
-              alert("Izin Orientation ditolak");
+            const permission = await DeviceMotionEvent.requestPermission();
+
+            if (permission !== "granted") {
+              alert("Izin sensor ditolak");
               return;
             }
           }
@@ -235,15 +239,16 @@
           window.addEventListener("deviceorientation", onDeviceOrientation);
 
           enabled = true;
+
           statusEl.textContent = "Status: ✅ Aktif";
           statusEl.classList.remove("off");
           statusEl.classList.add("on");
+
           enableBtn.textContent = "Nonaktifkan Sensor";
           enableBtn.classList.remove("enable");
           enableBtn.classList.add("enabled");
         } catch (e) {
-          alert("Sensor tidak didukung di perangkat ini.");
-          console.error(e);
+          alert("Sensor tidak didukung");
         }
       }
 
@@ -252,26 +257,26 @@
         window.removeEventListener("deviceorientation", onDeviceOrientation);
 
         enabled = false;
-        lastX = lastY = lastZ = null;
 
-        if (idleTimer) {
-          clearTimeout(idleTimer);
-          idleTimer = null;
-        }
-        stopSound(); // PAKSA MATI LANGSUNG
+        stopSound();
 
         statusEl.textContent = "Status: ❌ Belum Aktif";
         statusEl.classList.remove("on");
         statusEl.classList.add("off");
+
         enableBtn.textContent = "Aktifkan Sensor";
         enableBtn.classList.remove("enabled");
         enableBtn.classList.add("enable");
+
         markIdle();
       }
 
       enableBtn.addEventListener("click", () => {
-        if (!enabled) enableSensors();
-        else disableSensors();
+        if (!enabled) {
+          enableSensors();
+        } else {
+          disableSensors();
+        }
       });
     </script>
   </body>
